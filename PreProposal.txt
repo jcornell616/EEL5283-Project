@@ -1,0 +1,14 @@
+Background and Significance
+
+Brain-Computer Interfaces (BCIs) are a prevelant technology for consumer electronics and medical applications like Neural rehabilitation for disabled individuals.  BCIs can be used as a Brain to Computer dataflow as well as a Computer to Brain dataflow. For out project, we will be considering the brain to computer to dataflow to predict accelerometer data from the provided Local Field Potential dataset. We can use this predictive model to translate the thought of movement and resultant LFP into a variety of outcomes such as movement of prosthetics, movement of a cursor on a screen, or control movement in a VR space, among other applications of the produced accelerometer data. 
+
+These outcomes are significant for different groups: A prosthetic could be developed for individuals who have lost a limb, a cursor control system could help someone who has limited control of their limbs, and a VR application could help immersion and expand the scope of project possibilites. 
+
+
+
+
+
+Research Design and Methods:
+The aim of the project is to develop a BCI to predict the accelormenter data given the Local Field Potential(LFP) data. We will be testing out various paradigms. Broadly, we are looking at classification and decoding methods. We will split the dataset into training and testing dataset. Following the standard for ML projects we will split the dataset into 80% for training and 20% for testing. Additionaslly--for each model-- we will utilize cross validation of the training set to find optimal hyperparameters. 
+
+Given the data input as Local Field Potentials and the two outputs are EMG signals and accelerometer data. We will also utilize pre processing methods such as noise filtering and dimensionality reduction to optimize the inputs to the model. Predicting the accelerometer data is the main goal. We will create two different models, one that will predict the EMG data from the LFP data and one that will predict the accelerometer data from the EMG data. We will perform dynamic modelling of the muscle movement to make a better predictor. For dynamic modelling  we will be considering Kalman filters. To model the LFP data, the methods we plan on using are forms of Linear regression, SVMs, Bayesian Classifier, RNNs, Autoencoders, Random Forests.   We will also review the performance of the BCI to ensure it is not computationally intense.
