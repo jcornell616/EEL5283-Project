@@ -6,6 +6,9 @@
 \usepackage{helvet}
 \renewcommand{\familydefault}{\sfdefault}
 
+\usepackage{setspace}
+\onehalfspacing
+
 \title{ Predicting motion from LFP Project Pre-Proposal }
 \author{ Jackson Cornell, Maxwell Rosenzweig, Sidharth Sunil }
 \date{\today}
@@ -16,17 +19,21 @@
 
 \section{Background and Significance}
 
-Brain-Computer Interfaces (BCIs) are a prevelant technology for medical applications like neural rehabilitation for disabled individuals. BCIs allow brain-to-computer dataflow as well as computer-to-brain dataflow. For out project, we will only be considering the brain-to-computer to dataflow to predict accelerometer data from the provided Local Field Potential (LFP) dataset. We can use this predictive model to translate the thought of movement and resultant LFP into a variety of outcomes such as movement of a prosthetic, control of a cursor on a screen, or interaction in a Virtual Reality (VR) space, among other applications of the produced accelerometer data. 
+Brain-Computer Interfaces (BCIs) are an emerging technology for medical applications such as neural rehabilitation for disabled individuals. BCIs allow for the processing of neural signals to either transduce an action or provide a feedback stimulus to the brain. For our project, we will consider the processing of Local Field Potential (LFP) signals to predict hand and arm movement captured by accelerometer data. We can use this predictive model to translate the thought of movement and resultant LFP into a variety of outcomes such as movement of a prosthetic, control of a cursor on a screen, or interaction in a Virtual Reality (VR) space, among other applications of the produced accelerometer data. 
 
-These particular outcomes are significant for a variety groups: A prosthetic could be developed for individuals who have lost a limb, a cursor control system could help someone who has lost control or limited control of their limbs, and a VR application could help immersion of and expand the scope of VR projects. 
+These particular outcomes are significant for a variety of applications: A prosthetic could be developed for individuals who have lost a limb, a cursor control system could help someone who has lost control or limited control of their limbs, and commercial applications such VR could be developed.
 
 \section{Research Design and Methods}
-The aim of our project is to develop a BCI which will predict the desired movement (i.e. accelerometer data) given the corresponding LFP data. We will be testing out various paradigms and measuring their accuracy and precision of predictions as well as their temporal and spacial computational efficiency. BCIs are typically embedded systems, so we will consider the resources necessary to implement the paradigms.
+The aim of our project is to develop a BCI which will predict the desired movement (i.e. accelerometer data) given the corresponding LFP data. We will be implementing and testing various models, as well as measuring their accuracy and precision of predictions. Additionally, computational cost and memory space will be compared, as BCIs ae typically implemented in resource-constrained embedded environments.
 
-We will split the dataset into training dataset and testing dataset. Following the standard for Machine Learning projects, we will split the dataset into 80\% for training and 20\% for testing.
+We will split the dataset into a training and test dataset. Following the standard for constructing machine learning models, we will split the dataset into 80\% for training and 20\% for testing. The testing set will be further split into several folds for cross-validation of optimal hyperparameters (this process will be repeated for each model).
 
-Broadly, we are looking at classification and decoding methods for processing the LFP data. Some particular methods we are considering are: various forms of linear regression, support vector machines, Baysean classifiers, recurrent neural networks, autoeconders, and random forests. Using a selection of these methods, we will generate both EMG signal and accelerometer predictions from the LFP data. The EMG signal will be translated into accelerometer predictions using a selection of dynamic modeling methods, such as Kalman filters.
+Seeing as LFP data is relatively noise-free, and spike detection is a somewhat trivial issue, little time will be spent on preprocessing the data. We will, however, try several methods to improve model accuracy, including--but not limited to--bandpass filtering, wavelet filtering, and dimensionality reduction using Principal Component Analysis (PCA).
 
-As an additional parameter, we will utilize a variety of preprocessing methods on the LFP data and compare the performance of the paradigms with the processed and unprocessed data. Examples of preprocessing we would use are noise filtering and dimensionality reduction. 
+Broadly, we will consider two approaches to constructing the models: the first being LFP-to-accelerometer prediction, and the other being LFP-to-EMG-to-accelerometer prediction. The former method will use various machine learning models to directly predict the trajectory of the accelerometer, while the latter will use models to predict EMG signals, which will then be translated into accelerometer movement using a dynamic model.
+
+We will look at both classification and decoding methods for processing the LFP data. Some particular models we are considering are: various forms of linear regression, support vector machines, Bayesian classifiers, recurrent neural networks, autoencoders, and random forests. Using a selection of these methods, we will generate both EMG signal and accelerometer predictions from the LFP data. The EMG signal will be translated into accelerometer predictions using a selection of dynamic modeling methods, such as Kalman filters.
+
+The predicted accelerometer data will be compared to the actual accelerometer data to produce an error measurement, which will be used to assess their performance as well as calculate the model parameters. Once model training is complete, the models will be evaluated using the test set. Other metrics that will be considered are the computational cost (how long it takes each model to process an input) and memory usage (how much space do the model parameters need). With these metrics, we will be able to compare the performance and accuracy of these different models, and--more specifically--which ones will be best suited for use in a BCI.
 
 \end{document}
