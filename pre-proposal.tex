@@ -1,0 +1,32 @@
+\documentclass[12pt]{article}
+
+\usepackage{geometry}
+\geometry{letterpaper, portrait, margin=1in}
+
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+
+\title{ Predicting motion from LFP Project Pre-Proposal }
+\author{ Jackson Cornell, Maxwell Rosenzweig, Sidharth Sunil }
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Background and Significance}
+
+Brain-Computer Interfaces (BCIs) are a prevelant technology for medical applications like neural rehabilitation for disabled individuals. BCIs allow brain-to-computer dataflow as well as computer-to-brain dataflow. For out project, we will only be considering the brain-to-computer to dataflow to predict accelerometer data from the provided Local Field Potential (LFP) dataset. We can use this predictive model to translate the thought of movement and resultant LFP into a variety of outcomes such as movement of a prosthetic, control of a cursor on a screen, or interaction in a Virtual Reality (VR) space, among other applications of the produced accelerometer data. 
+
+These particular outcomes are significant for a variety groups: A prosthetic could be developed for individuals who have lost a limb, a cursor control system could help someone who has lost control or limited control of their limbs, and a VR application could help immersion of and expand the scope of VR projects. 
+
+\section{Research Design and Methods}
+The aim of our project is to develop a BCI which will predict the desired movement (i.e. accelerometer data) given the corresponding LFP data. We will be testing out various paradigms and measuring their accuracy and precision of predictions as well as their temporal and spacial computational efficiency. BCIs are typically embedded systems, so we will consider the resources necessary to implement the paradigms.
+
+We will split the dataset into training dataset and testing dataset. Following the standard for Machine Learning projects, we will split the dataset into 80\% for training and 20\% for testing.
+
+Broadly, we are looking at classification and decoding methods for processing the LFP data. Some particular methods we are considering are: various forms of linear regression, support vector machines, Baysean classifiers, recurrent neural networks, autoeconders, and random forests. Using a selection of these methods, we will generate both EMG signal and accelerometer predictions from the LFP data. The EMG signal will be translated into accelerometer predictions using a selection of dynamic modeling methods, such as Kalman filters.
+
+As an additional parameter, we will utilize a variety of preprocessing methods on the LFP data and compare the performance of the paradigms with the processed and unprocessed data. Examples of preprocessing we would use are noise filtering and dimensionality reduction. 
+
+\end{document}
