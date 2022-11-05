@@ -4,15 +4,21 @@ ReadMe will be used to set agendas and organize work.
 
 ## Proposal
 
-Based on the feedback I give you on your pre-proposal, rewrite the proposal to include: 
+Based on the feedback I give you on your pre-proposal, rewrite the proposal to include:
+
 a) Background and Significance  
+
 b) Preliminary studies  
+
 c) Research Design and Methods 
+
 d) Milestones, Metrics of Success and Timeline  
+
 You should introduce the area of investigation, explain the “big picture” or significance of the specific 
 problem that you will tackle, provide a list of the particular questions you intend to address in your 
 experiments/simulation, and the methods you will use to conduct these experiments/simulations. It is very 
 important to include all the details about how the data you will be working with has been/will be collected. 
+
 Limit: 7 pages (not including references), Single spacing, one-inch margins, 12-pt font size Arial font. 
 
 * Note: I think background/significance can just be copied from pre-proposal. We can add a quite a bit for the preliminary studies section from the papers weve found.
