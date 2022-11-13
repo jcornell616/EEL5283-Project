@@ -18,4 +18,4 @@ The aim of our project is to develop a BCI which will predict the desired moveme
 
 ## Pipeline
 
-![pipeline](/project_pipeline.jpg?raw=true)
+![pipeline](/images/project_pipeline.jpg?raw=true)
