@@ -15,3 +15,7 @@ The aim of our project is to develop a BCI which will predict the desired moveme
 - [ ] Perform hyperparameter tuning for CNN and train model
 - [ ] Evaluate models using test set and compare performances
 - [ ] Write final paper and prepare presentation
+
+## Pipeline
+
+![pipeline](/project_pipeline.jpg?raw=true)
