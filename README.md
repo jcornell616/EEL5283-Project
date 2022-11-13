@@ -1,55 +1,17 @@
-# EEL5283-Project
+# EEL5283 Project
 
-ReadMe will be used to set agendas and organize work.
+Brain-Computer Interfaces (BCIs) are an emerging technology for medical applications such as neural rehabilitation for disabled individuals. BCIs allow for the processing of neural signals to either transduce an action or provide a feedback stimulus to the brain. For our project, we will consider the processing of Local Field Potential (LFP) signals to predict hand and arm movement captured by accelerometer data. We can use this predictive model to translate the thought of movement and resultant LFP into a variety of outcomes such as movement of a prosthetic, control of a cursor on a screen, or interaction in a Virtual Reality (VR) space, among other applications of the produced accelerometer data.
 
-## Proposal
+These particular outcomes are significant for a variety of applications: A prosthetic could be developed for individuals who have lost a limb; a cursor control system could help someone who has lost control or limited control of their limbs; commercial applications such VR could be developed.
 
-Based on the feedback I give you on your pre-proposal, rewrite the proposal to include:
+The aim of our project is to develop a BCI which will predict the desired movement (i.e. accelerometer data) given the corresponding LFP data. We will compare two approaches to decoding LFP data, the first using the spectral power of different frequency bands, and the other using the temporal dynamics. These will be decoded using a Convolutional Neural Network (CNN) and Kernel Least Mean Squares (KLMS) filter, respectively.
 
-a) Background and Significance  
+## TO-DO
 
-b) Preliminary studies  
-
-c) Research Design and Methods 
-
-d) Milestones, Metrics of Success and Timeline  
-
-You should introduce the area of investigation, explain the “big picture” or significance of the specific 
-problem that you will tackle, provide a list of the particular questions you intend to address in your 
-experiments/simulation, and the methods you will use to conduct these experiments/simulations. It is very 
-important to include all the details about how the data you will be working with has been/will be collected. 
-
-Limit: 7 pages (not including references), Single spacing, one-inch margins, 12-pt font size Arial font. 
-
-* Note: I think background/significance can just be copied from pre-proposal. We can add a quite a bit for the preliminary studies section from the papers weve found.
-
-### Data acquisition:
-
-* Data is provided by Dr. Oweiss's lab
-* Data stored in spreadsheet, each trial must be hand selected to enable for processing
-* MATLAB script used to process each enabled trial and organize/display neural data
-* Two channels of LFP
-
-### Pre-processing:
-
-* Data will need to be filter (low pass with cutoff at 300 Hz)
-* Data can be downsampled to reduce computational cost
-* Dimensionality reduction probably won't be necessary due to low channel count
-
-### Decoding:
-
-* See papers for different decoding methods
-* LFP is not spike-based but continuous-time signal
-* Can either decode the pre-processed signal as-is, or do feature engineering to map to feature space
-* Common technique is to look at powers of different frequency bands
-* Can try KLMS on time-series signal
-* Hyperparameter tuning will be based off which decoding methodology we use
-
-### Evaluation:
-
-* Use error between predicted accelerometer data and actual accelerometer data
-* Should have some error benchmarks we want models to meet
-* Should have benchmark for model-runtimes
-
-### Timeline:
-* Idk just make something up lmao
+- [ ] Get access to data and get MATLAB script running, perform exploratory data analysis
+- [ ] Write modified MATLAB script that performs preprocessing (lowpass filtering, downsampling) and splits into training and test
+- [ ] Write python script that perfoms CNN preprocessing (convert data into spectrograms)
+- [ ] Perform hyperparameter tuning for KLMS and train model
+- [ ] Perform hyperparameter tuning for CNN and train model
+- [ ] Evaluate models using test set and compare performances
+- [ ] Write final paper and prepare presentation
