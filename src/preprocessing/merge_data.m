@@ -176,6 +176,9 @@ for patient_index = 1:length (patients)
                         trigno_trial_idx = (tmp{:,trigno_col});
                     end
                     num_trial_row = length(summit_trial_idx);
+                    if (isnan(summit_trial_idx))
+                        num_trial_row = 0;
+                    end
                     clear task;                   
                     task = repmat(this_task, 1, num_trial_row/length(this_task));
                     
@@ -225,7 +228,7 @@ for i = 1:length(stims)
     filename_string = [filename_string ,stims{i}];
 end
 
-save([pc_dir,'processed data\',filename_string,'.mat'],'all','-mat');
+save([pc_dir,'processed_data\',filename_string,'.mat'],'all','-mat');
 %(patients months, tasks, stims)
 
 

@@ -16,11 +16,13 @@
 close all; 
 clear all;
 
+addpath('C:\Users\jacks\OneDrive\Desktop\Github\eel5283-project\EEL5283-Project\src\Functions');
+
 %%
-pc_dir = ['O:\UH3\'];
-patient_ID = 'ET001';
-dominant_hand =1;
-Month = 9;
+pc_dir = 'C:\Users\jacks\';
+patient_ID = 'ET003';
+dominant_hand = 0;
+Month = 2;
 Day = 2;
 new_only = 1;
 % 1: reading newly appointed sessions only, so if sessionxxxx.mat already exist, do not read again
