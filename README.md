@@ -8,9 +8,9 @@ The aim of our project is to develop a BCI which will predict the desired moveme
 
 ## TO-DO
 
-- [ ] Get access to data and get MATLAB script running, perform exploratory data analysis
-- [ ] Write modified MATLAB script that performs preprocessing (lowpass filtering, downsampling) and splits into training and test
-- [ ] Write python script that perfoms CNN preprocessing (convert data into spectrograms)
+- [x] Get access to data and get MATLAB script running, perform exploratory data analysis
+- [x] Write modified MATLAB script that performs preprocessing (lowpass filtering, downsampling) and splits into training and test
+- [x] Write python script that perfoms CNN preprocessing (convert data into spectrograms)
 - [ ] Perform hyperparameter tuning for KLMS and train model
 - [ ] Perform hyperparameter tuning for CNN and train model
 - [ ] Evaluate models using test set and compare performances
@@ -19,3 +19,13 @@ The aim of our project is to develop a BCI which will predict the desired moveme
 ## Pipeline
 
 ![pipeline](/images/project_pipeline.jpg?raw=true)
+
+## References
+
+- [CNN Model for Time Series](https://machinelearningmastery.com/how-to-develop-convolutional-neural-network-models-for-time-series-forecasting/)
+
+    - Super useful article for implementaton. Specifically, the multivariate case.
+
+- [LSTM Model for Times Series](https://machinelearningmastery.com/multivariate-time-series-forecasting-lstms-keras/)
+
+    - Might be useful too. Different model.
