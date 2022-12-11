@@ -29,3 +29,5 @@ The aim of our project is to develop a BCI which will predict the desired moveme
 - [LSTM Model for Times Series](https://machinelearningmastery.com/multivariate-time-series-forecasting-lstms-keras/)
 
     - Might be useful too. Different model.
+
+- The first 2 references under "papers"
