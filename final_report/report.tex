@@ -13,13 +13,18 @@
 
 \usepackage{algpseudocode}
 
-\title{ Predicting motion from LFP Project Pre-Proposal }
-\author{ Jackson Cornell, Maxwell Rosenzweig, Sidharth Sunil }
+\usepackage{graphicx}
+
+\graphicspath{ {img/} }
+
+\title{Predicting motion from LFP data--a comparison between temporal and spectral methods}
+\author{Jackson Cornell, Maxwell Rosenzweig}
 \date{\today}
 
 \begin{document}
 
 \maketitle
+
 
 \section{Background and Significance}
 
@@ -28,6 +33,7 @@ Brain-Computer Interfaces (BCIs) are an emerging technology for medical applicat
 These particular outcomes are significant for a variety of applications: A prosthetic could be developed for individuals who have lost a limb; a cursor control system could help someone who has lost control or limited control of their limbs; commercial applications such VR could be developed.
 
 The aim of our project is to develop a BCI which will predict the desired movement (i.e. accelerometer data) given the corresponding LFP data. We will compare two approaches to decoding LFP data, the first using the spectral power of different frequency bands, and the other using the temporal dynamics. These will be decoded using a Convolutional Neural Network (CNN) and Kernel Least Mean Squares (KLMS) filter, respectively.
+
 
 \section{Preliminary Studies}
 
@@ -44,7 +50,6 @@ Instead of doing a matrix inversion to find the optimal model parameters, these 
 The next problem to solve is the fact that LFP data is not WSS. Kernel methods are known to be able to handle cases such as these. Kernel methods map the input data into a higher-dimension feature space where optimal weights can be found. This allows non-Gaussian and non-linear system’s dynamics to be estimated. The Kernel LMS (KLMS) filter is a kernelized version of LMS filter, and can be used to train data on-line. We will use the KLMS to decode the time-domain LFP signal into accelerometer data. \cite{li2012}
 
 
-
 \section{Research Design and Methods}
 
 \subsection{Dataset}
@@ -55,15 +60,27 @@ For the purposes of our study, we are only concerned with the resulting movement
 
 We will split the dataset into a training and test dataset. Following the standard for constructing machine learning models, this will consist of 80\% for training and 20\% for testing. The testing set will be further split into several folds for cross-validation of optimal hyperparameters (this process will be repeated for each model).
 
-First, we will split the dataset as described above. 80\% of the sessions will make up the training set, and the remaining 20\% will make up the testing set. The session identifiers will be stored in tables. We will use the provided "read\_data.m" program to import the data into matlab, and will feed the program the data from our tables to get the session data for further processing.
+First, we will split the dataset as described above. 80\% of the sessions will make up the training set, and the remaining 20\% will make up the testing set. The session identifiers will be stored in tables. We will use the provided "read\_data.m" program to import the data into a readable ".mat" file, and will feed the program the data from our tables to get the session data for further processing.
 
 \subsection{Data Pre-Processing}
 
-To increase model performance, we will employ low-pass filtering and downsampling of the data. All signals will be low-pass filtered with a bandpass of 0-220  Hz to remove high frequency artifacts. The signals will then be downsampled to 500 Hz to reduce computational complexity. This is shown to be an effective preprocessing strategy for LFP signals. \cite{ince2010}
+To increase model performance, we will employ bandpass filtering and downsampling of the accelerometer data. The data will be preprocessed in a manner in which different features will be extracted for inputing into the KLMS and CNN models.
 
-Studies show that the gamma band of LFP signals have a strong correlation with reach goals \cite{hwang2012}. For models using the PSD to decode trajectory, we will compute the PSD of the following frequency bands (delta band: 0 to 4 Hz; theta band: 4 to 8 Hz; alpha band 8 to 13 Hz; beta band: 13 to 30 Hz; low gamma band: 30 to 48 Hz; mid gamma band: 48 to 100 Hz; high gamma band: 100-200 Hz). These will be computed from windows of 200 ms, applied every 50-100 ms \cite{zhang2013}. The power of each band can be simultaneously computed using the short-time Fourier transform (STFT), which produces an image of the power of the frequencies and how they change over time.
+The LFP raw channel data, which are differential signals, will be subtracted from one another to get 2 de-noised signals. Studies show that the gamma band of LFP signals have a strong correlation with reach goals \cite{hwang2012}. Thus, the LFP data will be bandpass filtered from 30-80 Hz, which will act as the input to the KLMS model. For kernel-based methods, the trajectory can be decoded directly from the time domain signal \cite{li2012}. The spectrograms for the CNN model, on the other hand, will be computed directly from the de-noised signals. It is expected that the neural network will learn which frequencies encode the accelerometer dynamics. The spectrograms will be computed with windows of 400 ms, applied every 200 ms \cite{zhang2013}.
 
-For the kernel-based method, the trajectory can be decoded directly from the time domain signal \cite{li2012}. Thus, no further preprocessing is needed after downsampling the signal.
+\begin{figure}[h]
+\caption{Spectrogram of LFP channel}
+\centering
+\includegraphics[width=0.5\textwidth]{lfp_spect}
+\end{figure}
+
+For the KLMS model, the accelerometer data will be lowpass filtered with a cutoff of 2.5 Hz. This cutoff was decided from data analysis showing there being little to no frequencies present above this range. It was then downsampled to 250 Hz to match the sampling frequency of the LFP data for ease of model training. To align with the CNN model's spectrograms, the accelerometer data will then be downsampled to a sampling frequency of 5 Hz.
+
+\begin{figure}[h]
+\caption{Downsampled accelerometer time series}
+\centering
+\includegraphics[width=0.5\textwidth]{acc_time_series}
+\end{figure}
 
 \subsection{Neural Decoding}
 
@@ -74,7 +91,9 @@ There are few hyperparameters needed to run the KLMS. The first is the filter or
 \begin{algorithm}
 \caption{KLMS}\label{alg:cap}
 \begin{algorithmic}
-   \Require step size $\mu$, filter order $M$, and kernel size $\sigma$ initialized   
+   \Require step size $\mu$, filter order $M$, and kernel size
+   $\sigma$ initialized  
+   \State $k(x_i, x_j) = exp(-|| x_i - x_j ||^2_2 / \sigma^2_x)$
    \State $a^{(0)} \gets 0$  
    \For{each vector of size $M$ in $x_n$}  
      \State $f_i \gets \sum_{n=1}^{N} a^{(i)} k(x_i, x_n)$\   
@@ -84,7 +103,7 @@ There are few hyperparameters needed to run the KLMS. The first is the filter or
 \end{algorithmic}
 \end{algorithm}
 
-Where $k(x_i, x_j) = exp(-\sigma || x_i - x_j ||^2)$
+The KLMS filter will be further modified in the following ways: using vector quantization and an entropy-based learning function for outlier rejection. Vector quantization works in a manner in which, instead of adding a new weight for every incoming sample, if an error calculated from the sample is below a threshold $\epsilon$, an existing weight is updated, rather than a new weight added. Along with mean square error (MSE) being used as a criterion for learning, maximum correlation criterion (MCC) will also be used, as it takes into account higher order statistics aand can therefor be used to reject outliers.
 
 \subsection{Convolutional Neural Network (CNN)}
 
@@ -104,8 +123,6 @@ The input to the CNN will be an input tensor of the Spectrogram of LFPs in batch
 
 The weights and biases of the CNN are calculated using a back-propagation algorithm, where the labeled training set is exposed to the network and the error $e$ between the desired output and the predicted output by the network is calculated \cite{hecht1992}. The loss function used to calculate the error will be the Mean Squared Error (MSE) function and the Adam optimization algorithm will be used to modify the training weights. The optimal number of epochs and the learning rate for training the network will be defined using hyperparameter tuning.
 
-
-
 \subsection{Performance Analysis}
 
 The predicted accelerometer data will be compared to the actual accelerometer data to produce an error measurement, which will be used to assess their performance as well as calculate the model parameters. Once model training is complete, the models will be evaluated using the test set. Other metrics that will be considered are the computational cost (how long it takes each model to process an input) and memory usage (how much memory does the model use to process an input). With these metrics, we will be able to compare the performance and accuracy of these different models, and--more specifically--which ones will be best suited for use in a BCI.
@@ -114,30 +131,39 @@ We will use a least squares error to compare the predicted accelerometer data to
 
 For computational cost, we will time the models on each test session and compare the average runtime. Similarly, we will measure and compare average memory usage.
 
-\section{Milestones, Metrics of Success, and Timeline}
 
-We aim to complete the following milestones by the following dates.
+\section{Results}
+
+\subsection{KLMS}
+
+The KLMS was traied on 300 seconds of LFP data. Model test evaluation showed the KLMS could not effectively encode the accelerometer trajectory. The model is able to encapsulate the training data near perfectly, but severely underperforms with the testing data, indicating overfitting. The below table shows what hyperparameter values were tested:
 
 \begin{center}
 \begin{tabular}{ |c|c| } 
 \hline
-Date & Milestone\\ 
+Hyperparameters & Values\\ 
 \hline
-11/20 & Split dataset and get data into Matlab \\ 
-11/27 & Implement KLMS\\
-11/27 & Implement tests for models (Accelerometer LMS, Time usage, Memory usage)\\
-12/4 & Implement Preprocessing\\
-12/4 & Implement CNN\\
-12/11 & Finish Paper\\
+Kernel size $\sigma_x$ & 0.1 \\ 
+Embedding size $k$ & 40\\
+Step size $\eta$ & 0.5\\
+Threshold $\epsilon$ & 0.05\\
+Criterion & MSE, MCC\\
+Entropy kernel size $\sigma_h$ & 1\\
 \hline
 \end{tabular}
 \end{center}
 
-To measure how successful our models are, we need a model with low average error and low variance in error. This translates to better movement of a prosthetic, for example. As an estimate, the average error plus three times the standard deviation of the error should not exceed $5 cm/s^2$. 
+The below plots show the model training results on the hyperparameters with a minimum MSE:
 
-Additionally, we will compare the computational cost of the two models. The time it takes the models to evaluate a test point will be recorded, and the resulting averages will be compared to see which model has faster evaluation times. A benchmark of 100 ms will be used for model evaluation time, as this is roughly half of what studies indicates humans notice for delays in movements of prosthetics.
+The reasons for the KLMS overfitting the data are numerous. One possible explanation is that in this instance, the gamma band does not infact encode reach goals. In this case, there is no correlation between the input bandpass filtered LFP data and the output accelerometer trajectories. Additionally, an insufficient grid search of hyperparmeters may have been performed, in which case the model parameters would be sub-optimal. Finally, it is possible that the temporal dynamics of LFP signals do not, in fact, carry enformation for cognitive motor control.
 
-\bibliography{proposal}
+\subsection{CNN}
+
+
+\section{Discussion}
+
+
+\bibliography{report}
 \bibliographystyle{ieeetr}
 
 \end{document}
