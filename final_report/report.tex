@@ -82,9 +82,7 @@ For the KLMS model, the accelerometer data will be lowpass filtered with a cutof
 \includegraphics[width=0.5\textwidth]{acc_time_series}
 \end{figure}
 
-\subsection{Neural Decoding}
-
-\subsubsection{Kernel Least Mean Squares Filter (KLMS)}
+\subsection{Kernel Least Mean Squares Filter (KLMS)}
 
 There are few hyperparameters needed to run the KLMS. The first is the filter order, which can be derived from where the autocorrelation function (ACF) of the input data crosses zero. The other two are the kernel width and step size, which will each be found by using hyperparameter tuning described above. Below presents the algorithm for computing the KLMS, given these hyperparameters:
 
@@ -136,26 +134,50 @@ For computational cost, we will time the models on each test session and compare
 
 \subsection{KLMS}
 
-The KLMS was traied on 300 seconds of LFP data. Model test evaluation showed the KLMS could not effectively encode the accelerometer trajectory. The model is able to encapsulate the training data near perfectly, but severely underperforms with the testing data, indicating overfitting. The below table shows what hyperparameter values were tested:
+The KLMS was trained on several different trials of LFP data. It is worth noting that the model was not able to be training on the entire training set, due to computations shortcomings of the machines it was trained on. Model test evaluation showed the KLMS could not effectively encode the accelerometer trajectory. The model is able to encapsulate the training data near perfectly, but severely underperforms with the testing data, indicating overfitting. Table 1 shows what hyperparameter values were tested.
 
-\begin{center}
-\begin{tabular}{ |c|c| } 
-\hline
-Hyperparameters & Values\\ 
-\hline
-Kernel size $\sigma_x$ & 0.1 \\ 
-Embedding size $k$ & 40\\
-Step size $\eta$ & 0.5\\
-Threshold $\epsilon$ & 0.05\\
-Criterion & MSE, MCC\\
-Entropy kernel size $\sigma_h$ & 1\\
-\hline
-\end{tabular}
-\end{center}
+\begin{table}[h!]
+    \begin{center}
+    \begin{tabular}{ |c|c| } 
+    \hline
+        Hyperparameters & Values\\ 
+    \hline
+        Kernel size $\sigma_x$ & 0.1, 1, 10, 100 \\ 
+        Embedding size $k$ & 10, 20, 40\\
+        Step size $\eta$ & 1 \\
+        Threshold $\epsilon$ & 0.05\\
+        Criterion & MSE, MCC\\
+        Entropy kernel size $\sigma_h$ & 1, 10\\
+    \hline
+    \end{tabular}
+    \end{center}
+    \caption{Hyperparameter values tested}
+    \label{table:1}
+\end{table}
 
-The below plots show the model training results on the hyperparameters with a minimum MSE:
+Training results were very promising. Figure 3 shows the training curve in terms of MSE. The figure shows that the model was able to accurately capture the dynamics and decode what was in this case the x-axis of accelerometer data. Figure 4 demonstrates how well the model was able to fit the trajectory for the accelerometer time series, including smoothing and the general rejection of noise and outliers.
 
-The reasons for the KLMS overfitting the data are numerous. One possible explanation is that in this instance, the gamma band does not infact encode reach goals. In this case, there is no correlation between the input bandpass filtered LFP data and the output accelerometer trajectories. Additionally, an insufficient grid search of hyperparmeters may have been performed, in which case the model parameters would be sub-optimal. Finally, it is possible that the temporal dynamics of LFP signals do not, in fact, carry enformation for cognitive motor control.
+\begin{figure}[h]
+\caption{KLMS Learning Curve}
+\centering
+\includegraphics[width=0.5\textwidth]{learning_curve_klms}
+\end{figure}
+
+\begin{figure}[h]
+\caption{KLMS Training Fit}
+\centering
+\includegraphics[width=0.5\textwidth]{training_klms}
+\end{figure}
+
+However, when applying the model to the testing set, results indicated it was not able to generalize well. Figure 5 demonstrates that the model is simply a noisy DC offset. This is a strong indication of overfitting.
+
+\begin{figure}[h]
+\caption{KLMS Test Fit}
+\centering
+\includegraphics[width=0.5\textwidth]{test_klms}
+\end{figure}
+
+The reasons for the KLMS overfitting the data are numerous. One possible explanation is that in this instance, the gamma band does not infact encode reach goals. In this case, there is no correlation between the input bandpass filtered LFP data and the output accelerometer trajectories. Additionally, an insufficient grid search of hyperparmeters may have been performed, in which case the model parameters would be sub-optimal. Finally, the model may not have the complexity needed to accurately encode the trajectories.
 
 \subsection{CNN}
 
