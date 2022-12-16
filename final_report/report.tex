@@ -80,6 +80,7 @@ For the KLMS model, the accelerometer data will be lowpass filtered with a cutof
 \caption{Downsampled accelerometer time series}
 \centering
 \includegraphics[width=0.5\textwidth]{acc_time_series}
+\label{acc_time_series}
 \end{figure}
 
 \subsection{Kernel Least Mean Squares Filter (KLMS)}
@@ -107,28 +108,33 @@ The KLMS filter will be further modified in the following ways: using vector qua
 
 For this regression task, we will design a CNN in Python using the deep learning libraries TensorFlow and Keras. The CNN will consist of multiple convolution layers to create output feature maps. \cite{Angrick2019}
 
-The model layers will consist of a spatial convolution layer, a non-linear activation function, batch normalization and max pooling layers to generate the feature maps. These feature maps will be flattened and passed through fully connected layers, dropout layers and a non-linear activation function to obtain the predicted accelerometer output values. The kernel size, stride, dropout rate, number of hidden layers and more will be initially defined but modified using Hyperparameter training.
+The model layers will consist of a spatial convolution layer, a non-linear activation function, batch normalization and max pooling layers to generate the feature maps. These feature maps will be flattened and passed through fully connected layers, dropout layers and a non-linear activation function to obtain the predicted accelerometer output values. The kernel size, dropout rate, number of hidden layers and more will be initially defined but modified using Hyperparameter training. Figure~\ref{cnn_struct} shows the a diagram of our basic CNN model, though the amount of layers and their sizes vary based on the hyperparmeter tuning.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=1\textwidth]{cnn}
+  \caption{CNN Structure}
+  \label{cnn_struct}
+\end{figure}
 
 \subsubsection{Hyperparameter Tuning}
 
 CNNs need several hyperparameters to construct its architecture, some of which will be found using hyperparameter tuning, others will be found using knowledge of the data. Specifically, since we are essentially performing regression rather than classification of the data, we will use a linear activation function on the output. For the hidden layers, leaky ReLU is known to perform well for CNNs. Hyperparameter tuning will need to be carried out to determine quantities such as kernel size, dropout rate, number of hidden layers, batch size, learning rate, and more. Luckily, python libraries such as Sklearn and Tensorflow have many methods that allow easy tuning of such parameters.
 
+
 \subsubsection{Training} 
 
 The tensor dataset obtained after preprocessing the raw LFP data will be of the shape $N$x$C$x$H$x$W$, where $N$ is the number of Spectrograms, $C$ is the number of channels(i.e., $1$ for the spectrogram data), $H$ and $W$ are the height and width of the image. The dataset will be split following a traditional 80/20 split for ML models, where 80\% of the data is for training the model and 20\% of the data is for validating the model.
 
-The input to the CNN will be an input tensor of the Spectrogram of LFPs in batches, each individual spectrogram can be considered as a single channel image over a window of time. The output of the data generated will be a three-dimensional vector corresponding to the three axes of acceleration $(x, y, z)$.
+The input to the CNN will be an input tensor of the Spectrogram of LFPs in batches, each individual spectrogram can be considered as a single channel image over a window of time, 400ms, with the windows overlapping every 200ms. The output of the data generated will be a three-dimensional vector corresponding to the three axes of acceleration $(x, y, z)$.
 
 The weights and biases of the CNN are calculated using a back-propagation algorithm, where the labeled training set is exposed to the network and the error $e$ between the desired output and the predicted output by the network is calculated \cite{hecht1992}. The loss function used to calculate the error will be the Mean Squared Error (MSE) function and the Adam optimization algorithm will be used to modify the training weights. The optimal number of epochs and the learning rate for training the network will be defined using hyperparameter tuning.
 
 \subsection{Performance Analysis}
 
-The predicted accelerometer data will be compared to the actual accelerometer data to produce an error measurement, which will be used to assess their performance as well as calculate the model parameters. Once model training is complete, the models will be evaluated using the test set. Other metrics that will be considered are the computational cost (how long it takes each model to process an input) and memory usage (how much memory does the model use to process an input). With these metrics, we will be able to compare the performance and accuracy of these different models, and--more specifically--which ones will be best suited for use in a BCI.
+The predicted accelerometer data will be compared to the actual accelerometer data to produce an error measurement, which will be used to assess their performance as well as calculate the model parameters. Once model training is complete, the models will be evaluated using the test set. With these metrics, we will be able to compare the performance and accuracy of these different models, and -- more specifically -- which ones will be best suited for use in a BCI.
 
 We will use a least squares error to compare the predicted accelerometer data to the session data from the test set. Because the predicted data and session data will have different sampling frequencies, we will compare the downsampled session accelerometer data to the predicted accelerometer data. We can then graph this error over time to compare the models, as well as compute the average error and variance of the error for the models to compare accuracy and precision as well.
-
-For computational cost, we will time the models on each test session and compare the average runtime. Similarly, we will measure and compare average memory usage.
-
 
 \section{Results}
 
@@ -151,22 +157,24 @@ The KLMS was trained on several different trials of LFP data. It is worth noting
     \hline
     \end{tabular}
     \end{center}
-    \caption{Hyperparameter values tested}
+    \caption{KLMS Hyperparameter values tested}
     \label{table:1}
 \end{table}
 
-Training results were very promising. Figure 3 shows the training curve in terms of MSE. The figure shows that the model was able to accurately capture the dynamics and decode what was in this case the x-axis of accelerometer data. Figure 4 demonstrates how well the model was able to fit the trajectory for the accelerometer time series, including smoothing and the general rejection of noise and outliers.
+Training results were very promising. Figure~\ref{learning_curve_klms} shows the training curve in terms of MSE. The figure shows that the model was able to accurately capture the dynamics and decode what was in this case the x-axis of accelerometer data. Figure~\ref{training_klms} demonstrates how well the model was able to fit the trajectory for the accelerometer time series, including smoothing and the general rejection of noise and outliers.
 
 \begin{figure}[h]
 \caption{KLMS Learning Curve}
 \centering
 \includegraphics[width=0.5\textwidth]{learning_curve_klms}
+\label{learning_curve_klms}
 \end{figure}
 
 \begin{figure}[h]
 \caption{KLMS Training Fit}
 \centering
 \includegraphics[width=0.5\textwidth]{training_klms}
+\label{training_klms}
 \end{figure}
 
 However, when applying the model to the testing set, results indicated it was not able to generalize well. Figure 5 demonstrates that the model is simply a noisy DC offset. This is a strong indication of overfitting.
@@ -181,9 +189,49 @@ The reasons for the KLMS overfitting the data are numerous. One possible explana
 
 \subsection{CNN}
 
+The CNN was able to train on the entire dataset, as the size of the training set size was greatly reduced by the windowing the LFP data. Model test evaluation showed the CNN could not effectively encode the accelerometer trajectory. The model was able to reach near-zero MSE on the training set, but failed to generalize to the validation or testing sets. Early stopping was utilized to test the model before it overfit the training data; however, these models simply output a constant at the average of the training set, indicating that it was not able to learn any correlation between the LFP data and accelerometer data. Table 2 shows the hyperparameter space that was tested in a randomized grid search with the goal of finding the model that minimized validation set error. None of the 300 models tested were able to perform better than a constant output for the validation and testing sets.
+
+\begin{table}[h!]
+    \begin{center}
+    \begin{tabular}{ |c|c| } 
+    \hline
+        Hyperparameters & Values\\ 
+    \hline
+        Number of convolution layers & 2, 3, 4\\
+        Convolution layer dropout rate & [0, 0.2] step size 0.05 \\ 
+        Filters per layer & [8,64] step size 8 \\
+        Filter kernel size & 1, 3, 5\\
+        Number of dense layers & 1, 2, 3, 4, 5\\
+        Dense layer dropout rate & [0, 0.5] step size 0.1 \\ 
+        Learning rate & [0.005, 0.0005], sampled logarithmically\\
+    \hline
+    \end{tabular}
+    \end{center}
+    \caption{CNN Hyperparameter values tested}
+    \label{table:2}
+\end{table}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=1\textwidth]{cnn_overfit}
+  \includegraphics[width=0.5\textwidth]{cnn_loss_overfit}
+  \caption{CNN Overfit model performance. Top: Model's prediction of X Y and Z axis of testing set. Middle: Model's prediction of X Y and Z axis of training set. Bottom: Model training history}
+  \label{cnn_overfit}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=1\textwidth]{cnn_underfit}
+  \includegraphics[width=0.5\textwidth]{cnn_loss_underfit}
+  \caption{CNN Early stop model performance. Top: Model's prediction of X Y and Z axis of testing set. Middle: Model's prediction of X Y and Z axis of training set. Bottom: Model training history}
+  \label{cnn_underfit}
+\end{figure}
+
+Figure~\ref{cnn_overfit} shows an overfit model's performance on the test and training dataset, along with the training history for the model. The increase in validation set error occurs in the same amount as the decrease in training validation set error, indicating that the model is not fitting to the relationship between the input and output, but rather simply learning the outputs corresponding to specific inputs. Several regularization techniques were attempted to prevent this, including dropout layers \cite{JMLR:v15:srivastava14a} and kernel regularization \cite{DBLP:journals/corr/abs-1205-2653}, but these simply caused the model to output the average of the training set. Figure~\ref{cnn_underfit} shows one such model's performance and training history. 
 
 \section{Discussion}
 
+Neither the KLMS model nor the CNN model were able to perform in any useful capacity on the testing data set. However, these models have been used previously to decode neural signals in other similar contexts \cite{zhengli2014}, so it is possible that our specific preprocessing, training, or model methodology is flawed. Further work with a larger dataset of more varied movements may result in more performant models. Additionally, modeling the relation between LFP and EMG signals from the muscle groups that the prosthetic targets or the position or velocity, as opposed to acceleration, may be prove more effective.
 
 \bibliography{report}
 \bibliographystyle{ieeetr}
